@@ -1,0 +1,22 @@
+{
+  "name": "medicare-pharmacy-backend",
+  "version": "1.0.0",
+  "description": "Backend API for MediCare Pharmacy - Pure Node.js (no frameworks)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "node --env-file=.env server.js"
+  },
+  "keywords": [
+    "pharmacy",
+    "api",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.5"
+  }
+}

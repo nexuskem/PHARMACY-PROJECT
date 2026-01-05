@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="MediCare Pharmacy Patient Dashboard - View your orders, track prescriptions, and manage your health appointments.">
+  <title>Patient Dashboard - MediCare Pharmacy</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">💊</div>
+          <span>MediCare</span>
+        </a>
+
+        <nav class="nav-menu">
+          <a href="index.html" class="nav-link">Products</a>
+          <a href="appointment.html" class="nav-link">Book Appointment</a>
+          <a href="dashboard.html" class="nav-link active">My Orders</a>
+        </nav>
+
+        <div class="nav-actions">
+          <a href="cart.html" class="cart-btn">
+            🛒 Cart
+            <span class="cart-count" style="display: none;">0</span>
+          </a>
+          <a href="patient-login.html" class="btn btn-outline">Patient Login</a>
+          <a href="admin-login.html" class="btn btn-outline">Admin Login</a>
+        </div>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <h1 class="section-title">👤 Patient Dashboard</h1>
+
+        <!-- Welcome Message -->
+        <div id="welcome-section"
+          style="background: var(--primary-light); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem;">
+          <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Welcome back!</h2>
+          <p class="text-muted">Manage your orders, prescriptions, and health appointments all in one place.</p>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile-section"
+          style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-sm); display: flex; gap: 1.5rem; align-items: center; border: 1px solid var(--gray-200);">
+          <div
+            style="font-size: 2.5rem; background: var(--gray-50); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+            👤</div>
+          <div>
+            <h3 id="profile-name" style="margin-bottom: 0.25rem;">Loading...</h3>
+            <div style="display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray-600); flex-wrap: wrap;">
+              <span id="profile-id">ID: ...</span>
+              <span id="profile-email">Email: ...</span>
+              <span id="profile-phone">Phone: ...</span>
+            </div>
+            <div style="margin-top: 0.5rem; font-weight: 500; color: var(--primary);">
+              🩺 <span id="profile-doctor">Assigned Doctor: Loading...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div id="notifications-section" style="margin-bottom: 2rem; display: none;">
+          <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--gray-700);">🔔 Notifications</h3>
+          <div id="notifications-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="dashboard-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">📦</div>
+            <div class="stat-value" id="total-orders">0</div>
+            <div class="stat-label">Total Orders</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon orange">⏳</div>
+            <div class="stat-value" id="pending-approval">0</div>
+            <div class="stat-label">Pending Approval</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon green">✓</div>
+            <div class="stat-value" id="completed-orders">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+
+        <!-- Pending Approvals Alert -->
+        <div id="approval-alert" class="hidden"
+          style="background: var(--warning-light); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+          <span style="font-size: 1.5rem;">⚠️</span>
+          <div>
+            <strong style="color: var(--warning);">Prescription Approval Pending</strong>
+            <p style="color: var(--gray-600); font-size: 0.875rem;">Some items in your orders require pharmacist
+              approval. <a href="appointment.html">Book an appointment</a> to get approval.</p>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table">
+          <div class="table-header">
+            <h3 class="table-title">📋 Order History</h3>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody">
+                <!-- Orders rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="no-orders" class="hidden" style="text-align: center; padding: 3rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+            <h3>No orders yet</h3>
+            <p class="text-muted">Start shopping to see your orders here</p>
+            <a href="index.html" class="btn btn-primary mt-lg">Browse Products</a>
+          </div>
+        </div>
+
+        <!-- Appointments Section -->
+        <div class="orders-table" style="margin-top: 2rem;">
+          <div class="table-header">
+            <h3 class="table-title">📅 Upcoming Appointments</h3>
+          </div>
+
+          <div id="appointments-list" style="padding: 1rem;">
+            <!-- Appointments rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
+          <a href="index.html" class="btn btn-primary">
+            🛒 Continue Shopping
+          </a>
+          <a href="appointment.html" class="btn btn-outline">
+            📅 Book Appointment
+          </a>
+          <a href="cart.html" class="btn btn-outline">
+            🛒 View Cart
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>💊 MediCare Pharmacy</h4>
+            <p>Your trusted online pharmacy providing quality medications and health products since 2020.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">All Products</a></li>
+              <li><a href="appointment.html">Book Appointment</a></li>
+              <li><a href="dashboard.html">My Orders</a></li>
+              <li><a href="cart.html">Shopping Cart</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Customer Service</h4>
+            <ul>
+              <li><a href="contact.html">Contact Us</a></li>
+              <li><a href="#">FAQs</a></li>
+              <li><a href="#">Shipping Info</a></li>
+              <li><a href="#">Return Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact</h4>
+            <ul>
+              <li>📞 1-800-MEDICARE</li>
+              <li>✉️ support@medicare.com</li>
+              <li>📍 123 Health Street</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 MediCare Pharmacy. All rights reserved. Licensed pharmacy #12345</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    /**
+     * Fetch and display user profile
+     */
+    async function loadProfile() {
+      const token = Auth.getToken();
+      if (!token) return;
+
+      try {
+        const response = await fetch('http://localhost:3000/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          const user = data.user;
+          document.getElementById('profile-name').textContent = user.name || (user.firstName + ' ' + user.lastName);
+          document.getElementById('profile-id').textContent = `ID: ${user.patientId || user.patient_id}`;
+          document.getElementById('profile-email').textContent = `Email: ${user.email || 'N/A'}`;
+          document.getElementById('profile-phone').textContent = `Phone: ${user.phone || 'N/A'}`;
+          document.getElementById('profile-doctor').textContent = `Assigned Doctor: ${user.assignedDoctor || 'Not Assigned'}`;
+
+          // Also update welcome name just in case local storage was stale
+          document.querySelector('#welcome-section h2').textContent = `Welcome back, ${user.firstName}!`;
+        }
+      } catch (e) {
+        console.error('Error fetching profile:', e);
+      }
+    }
+
+    /**
+     * Load User Notifications
+     */
+    async function loadNotifications() {
+      const token = Auth.getToken();
+      if (!token) return;
+
+      try {
+        const response = await fetch('http://localhost:3000/api/notifications', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (data.success && data.notifications.length > 0) {
+          const container = document.getElementById('notifications-section');
+          const list = document.getElementById('notifications-list');
+
+          container.style.display = 'block';
+          list.innerHTML = data.notifications.map(note => `
+            <div id="notification-${note.id}" style="background: ${note.is_read ? 'var(--gray-50)' : 'white'}; border: 1px solid ${note.is_read ? 'var(--gray-200)' : 'var(--primary-light)'}; border-left: 4px solid ${note.is_read ? 'var(--gray-400)' : 'var(--primary)'}; padding: 1rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); position: relative;">
+              <button onclick="deleteNotification(${note.id})" aria-label="Clear notification" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--gray-400); line-height: 1;">&times;</button>
+              <p style="margin-bottom: 0.25rem; padding-right: 1.5rem;">${note.message}</p>
+              <small class="text-muted">${new Date(note.createdAt).toLocaleString()}</small>
+            </div>
+          `).join('');
+
+          // Mark as read after viewing
+          setTimeout(() => {
+            fetch('http://localhost:3000/api/notifications/read', {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+          }, 2000);
+        }
+      } catch (e) {
+        console.error('Error fetching notifications:', e);
+      }
+    }
+
+    /**
+     * Delete Notification
+     */
+    async function deleteNotification(id) {
+      const token = Auth.getToken();
+      if (!token) return;
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/notifications/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          const el = document.getElementById(`notification-${id}`);
+          if (el) el.remove();
+
+          // Check if list is empty
+          const list = document.getElementById('notifications-list');
+          if (list.children.length === 0) {
+            document.getElementById('notifications-section').style.display = 'none';
+          }
+
+          if (typeof showToast === 'function') showToast('Notification cleared', 'success');
+        } else {
+          if (typeof showToast === 'function') showToast(data.message, 'error');
+          else alert(data.message);
+        }
+      } catch (e) {
+        console.error('Error deleting notification:', e);
+        if (typeof showToast === 'function') showToast('Network error', 'error');
+      }
+    }
+
+    /**
+     * Initialize dashboard with data
+     */
+    function initDashboard() {
+      loadProfile();
+      loadNotifications();
+
+      // Get user orders from localStorage or use mock data
+      let orders = JSON.parse(localStorage.getItem('medicare_orders') || '[]');
+
+      // If no orders, use mock data for demo
+      if (orders.length === 0) {
+        orders = MOCK_ORDERS;
+      }
+
+      // Update stats
+      const totalOrders = orders.length;
+      const pendingApproval = orders.filter(o => o.status === 'pending' && o.requiresApproval).length;
+      const completed = orders.filter(o => o.status === 'delivered').length;
+
+      document.getElementById('total-orders').textContent = totalOrders;
+      document.getElementById('pending-approval').textContent = pendingApproval;
+      document.getElementById('completed-orders').textContent = completed;
+
+      // Show approval alert if needed
+      if (pendingApproval > 0) {
+        document.getElementById('approval-alert').classList.remove('hidden');
+      }
+
+      // Render orders table
+      const tbody = document.getElementById('orders-tbody');
+      const noOrders = document.getElementById('no-orders');
+
+      if (orders.length === 0) {
+        tbody.parentElement.parentElement.style.display = 'none';
+        noOrders.classList.remove('hidden');
+      } else {
+        noOrders.classList.add('hidden');
+        tbody.innerHTML = orders.map(order => `
+          <tr>
+            <td><strong>${order.id}</strong></td>
+            <td>${order.date}</td>
+            <td>${Array.isArray(order.items) ? order.items.join(', ') : order.items}</td>
+            <td><strong>${typeof formatPrice === 'function' ? formatPrice(order.total) : order.total}</strong></td>
+            <td>
+              <span class="status-badge status-${order.status}">
+                ${getStatusText(order.status)}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Render appointments
+      const appointments = JSON.parse(localStorage.getItem('medicare_appointments') || '[]');
+      const appointmentsList = document.getElementById('appointments-list');
+
+      if (appointments.length === 0) {
+        appointmentsList.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--gray-500);">
+            <p>No upcoming appointments</p>
+            <a href="appointment.html" class="btn btn-outline mt-md">Book Now</a>
+          </div>
+        `;
+      } else {
+        appointmentsList.innerHTML = appointments.map(apt => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--gray-200);">
+            <div>
+              <strong>${apt.date}</strong> at ${apt.time}
+              <p class="text-muted" style="font-size: 0.875rem;">${apt.reason || 'Consultation'}</p>
+            </div>
+            <span class="status-badge status-processing">${apt.status}</span>
+          </div>
+        `).join('');
+      }
+
+      // Update welcome message with user name if logged in
+      const user = Auth.getCurrentUser();
+      if (user) {
+        document.querySelector('#welcome-section h2').textContent = `Welcome back, ${user.name || user.firstName}!`;
+      }
+    }
+
+    /**
+     * Get readable status text
+     */
+    function getStatusText(status) {
+      const statusMap = {
+        'pending': '⏳ Pending Approval',
+        'approved': '✓ Approved',
+        'processing': '📦 Processing',
+        'shipped': '🚚 Shipped',
+        'delivered': '✓ Delivered',
+        'scheduled': '📅 Scheduled'
+      };
+      return statusMap[status] || status;
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if user is logged in and redirect based on role
+      const user = Auth.getCurrentUser();
+      if (user && user.role === 'pharmacist') {
+        window.location.href = 'pharmacist.html';
+        return;
+      }
+
+      // Redirect to login if not authenticated
+      if (!user) {
+        window.location.href = 'patient-login.html';
+        return;
+      }
+
+      initDashboard();
+    });
+  </script>
+</body>
+
+</html>

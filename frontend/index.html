@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MediCare Pharmacy - Your trusted online pharmacy for prescription medications, vitamins, and health products. Fast delivery and pharmacist consultations available.">
+  <meta name="keywords" content="pharmacy, medication, prescription, vitamins, health, OTC, online pharmacy">
+  <meta name="author" content="MediCare Pharmacy">
+  <title>MediCare Pharmacy - Your Trusted Online Pharmacy</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">💊</div>
+          <span>MediCare</span>
+        </a>
+        
+        <nav class="nav-menu">
+          <a href="index.html" class="nav-link active">Products</a>
+          <a href="appointment.html" class="nav-link">Book Appointment</a>
+          <a href="dashboard.html" class="nav-link">My Orders</a>
+        </nav>
+        
+        <div class="nav-actions">
+          <a href="cart.html" class="cart-btn">
+            🛒 Cart
+            <span class="cart-count" style="display: none;">0</span>
+          </a>
+          <a href="patient-login.html" class="btn btn-outline">Patient Login</a>
+          <a href="doctor-login.html" class="btn btn-outline">Doctor/Admin Login</a>
+        </div>
+        
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container hero-content">
+        <div class="hero-badge">
+          <span>🏥</span>
+          <span>Licensed Online Pharmacy</span>
+        </div>
+        <h1>Your Health, Our Priority</h1>
+        <p>Order prescription medications and health products from the comfort of your home. Fast delivery, pharmacist consultations, and trusted care.</p>
+      </div>
+    </section>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <!-- Search and Filters -->
+        <div style="margin-bottom: 2rem;">
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+            <input 
+              type="search" 
+              id="search-input" 
+              class="form-input" 
+              placeholder="🔍 Search medications, vitamins, health products..." 
+              style="flex: 1; min-width: 250px; max-width: 400px;"
+            >
+          </div>
+          
+          <div id="category-filters" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <!-- Category filters rendered by JS -->
+          </div>
+        </div>
+        
+        <!-- Info Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius-md); display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2rem;">✓</span>
+            <div>
+              <strong style="color: var(--success);">OTC Products</strong>
+              <p style="font-size: 0.875rem; color: var(--gray-600);">Available for immediate purchase</p>
+            </div>
+          </div>
+          <div style="background: var(--warning-light); padding: 1rem; border-radius: var(--radius-md); display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2rem;">⚠️</span>
+            <div>
+              <strong style="color: var(--warning);">Prescription Drugs</strong>
+              <p style="font-size: 0.875rem; color: var(--gray-600);">Require pharmacist approval</p>
+            </div>
+          </div>
+          <div style="background: var(--primary-light); padding: 1rem; border-radius: var(--radius-md); display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2rem;">📅</span>
+            <div>
+              <strong style="color: var(--primary);">Need Consultation?</strong>
+              <p style="font-size: 0.875rem; color: var(--gray-600);"><a href="appointment.html">Book an appointment</a></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Products Section -->
+        <h2 class="section-title">Our Products</h2>
+        <div id="products-grid" class="products-grid">
+          <!-- Products rendered by JS -->
+        </div>
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>💊 MediCare Pharmacy</h4>
+            <p>Your trusted online pharmacy providing quality medications and health products since 2020.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">All Products</a></li>
+              <li><a href="appointment.html">Book Appointment</a></li>
+              <li><a href="dashboard.html">My Orders</a></li>
+              <li><a href="cart.html">Shopping Cart</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Customer Service</h4>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">FAQs</a></li>
+              <li><a href="#">Shipping Info</a></li>
+              <li><a href="#">Return Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact</h4>
+            <ul>
+              <li>📞 1-800-MEDICARE</li>
+              <li>✉️ support@medicare.com</li>
+              <li>📍 123 Health Street</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 MediCare Pharmacy. All rights reserved. Licensed pharmacy #12345</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Filter button styles -->
+  <style>
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--gray-300);
+      border-radius: var(--radius-full);
+      background: var(--white);
+      color: var(--gray-600);
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .filter-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--white);
+    }
+  </style>
+  
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

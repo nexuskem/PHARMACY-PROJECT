@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MediCare Pharmacy - Your shopping cart. Review your items and proceed to checkout.">
+  <title>Shopping Cart - MediCare Pharmacy</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">💊</div>
+          <span>MediCare</span>
+        </a>
+        
+        <nav class="nav-menu">
+          <a href="index.html" class="nav-link">Products</a>
+          <a href="appointment.html" class="nav-link">Book Appointment</a>
+          <a href="dashboard.html" class="nav-link">My Orders</a>
+        </nav>
+        
+        <div class="nav-actions">
+          <a href="cart.html" class="cart-btn active">
+            🛒 Cart
+            <span class="cart-count" style="display: none;">0</span>
+          </a>
+          <a href="login.html" class="btn btn-outline">Login</a>
+          <a href="register.html" class="btn btn-primary">Register</a>
+        </div>
+        
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <h1 class="section-title">🛒 Shopping Cart</h1>
+        
+        <div class="cart-container">
+          <!-- Cart Items -->
+          <div id="cart-items" class="cart-items">
+            <!-- Cart items rendered by JS -->
+          </div>
+          
+          <!-- Cart Summary -->
+          <aside id="cart-summary" class="cart-summary">
+            <!-- Summary rendered by JS -->
+          </aside>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>💊 MediCare Pharmacy</h4>
+            <p>Your trusted online pharmacy providing quality medications and health products since 2020.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">All Products</a></li>
+              <li><a href="appointment.html">Book Appointment</a></li>
+              <li><a href="dashboard.html">My Orders</a></li>
+              <li><a href="cart.html">Shopping Cart</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Customer Service</h4>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">FAQs</a></li>
+              <li><a href="#">Shipping Info</a></li>
+              <li><a href="#">Return Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact</h4>
+            <ul>
+              <li>📞 1-800-MEDICARE</li>
+              <li>✉️ support@medicare.com</li>
+              <li>📍 123 Health Street</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 MediCare Pharmacy. All rights reserved. Licensed pharmacy #12345</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Initialize cart page on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCartPage();
+    });
+  </script>
+</body>
+</html>

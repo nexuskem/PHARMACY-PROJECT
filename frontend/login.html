@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login to your MediCare Pharmacy account to manage orders, track prescriptions, and access your health dashboard.">
+  <title>Login - MediCare Pharmacy</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">💊</div>
+          <span>MediCare</span>
+        </a>
+        
+        <nav class="nav-menu">
+          <a href="index.html" class="nav-link">Products</a>
+          <a href="appointment.html" class="nav-link">Book Appointment</a>
+          <a href="dashboard.html" class="nav-link">My Orders</a>
+        </nav>
+        
+        <div class="nav-actions">
+          <a href="cart.html" class="cart-btn">
+            🛒 Cart
+            <span class="cart-count" style="display: none;">0</span>
+          </a>
+          <a href="login.html" class="btn btn-outline active">Login</a>
+          <a href="register.html" class="btn btn-primary">Register</a>
+        </div>
+        
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <div class="form-container">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="logo-icon" style="width: 60px; height: 60px; font-size: 2rem; margin: 0 auto 1rem;">💊</div>
+            <h1 class="form-title" style="margin-bottom: 0.5rem;">Welcome Back</h1>
+            <p class="text-muted">Sign in to your MediCare account</p>
+          </div>
+          
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                class="form-input" 
+                placeholder="you@example.com"
+                required
+              >
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <input 
+                type="password" 
+                id="password" 
+                class="form-input" 
+                placeholder="Enter your password"
+                required
+                minlength="6"
+              >
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <input type="checkbox" id="remember">
+                <span style="font-size: 0.875rem;">Remember me</span>
+              </label>
+              <a href="#" style="font-size: 0.875rem;">Forgot password?</a>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+              Sign In
+            </button>
+          </form>
+          
+          <div class="form-footer" style="margin-top: 2rem;">
+            <p>Don't have an account? <a href="register.html"><strong>Create one</strong></a></p>
+          </div>
+          
+          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--gray-200); text-align: center;">
+            <p class="text-muted" style="font-size: 0.875rem; margin-bottom: 1rem;">Or continue with</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+              <button type="button" class="btn btn-outline" style="flex: 1;">
+                🔷 Google
+              </button>
+              <button type="button" class="btn btn-outline" style="flex: 1;">
+                🍎 Apple
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-bottom" style="border-top: none; margin-top: 0; padding-top: 0;">
+          <p>&copy; 2025 MediCare Pharmacy. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
