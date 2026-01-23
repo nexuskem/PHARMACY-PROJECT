@@ -45,18 +45,7 @@ const init = async () => {
 
 const createTables = async () => {
   try {
-    // DROP TABLES for clean slate (Reverse order of dependencies)
-    await pool.query('DROP TABLE IF EXISTS notifications');
-    await pool.query('DROP TABLE IF EXISTS order_items');
-    await pool.query('DROP TABLE IF EXISTS cart_items');
-    await pool.query('DROP TABLE IF EXISTS payments'); // If exists
-    await pool.query('DROP TABLE IF EXISTS appointments');
-    await pool.query('DROP TABLE IF EXISTS orders');
-    await pool.query('DROP TABLE IF EXISTS users'); // Old table
-    await pool.query('DROP TABLE IF EXISTS patients');
-    await pool.query('DROP TABLE IF EXISTS doctors');
-    // Keep products table if possible, or drop if we want full reset. Let's keep products if they don't depend on users.
-    // Actually orders depend on products. So products are safe to keep.
+    // Tables are created if they don't exist. Existing data is preserved.
 
     // 1. Doctors Table
     await pool.query(`
@@ -69,6 +58,8 @@ const createTables = async () => {
         lastName VARCHAR(100) NOT NULL,
         phone VARCHAR(20),
         role VARCHAR(20) DEFAULT 'pharmacist',
+        reset_token VARCHAR(255) DEFAULT NULL,
+        reset_token_expires DATETIME DEFAULT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -85,6 +76,8 @@ const createTables = async () => {
         phone VARCHAR(20),
         role VARCHAR(20) DEFAULT 'patient',
         assigned_doctor_id INT,
+        reset_token VARCHAR(255) DEFAULT NULL,
+        reset_token_expires DATETIME DEFAULT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (assigned_doctor_id) REFERENCES doctors(id) ON DELETE SET NULL
       )

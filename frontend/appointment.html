@@ -56,6 +56,11 @@
           <h2 class="form-title">Schedule Your Consultation</h2>
           
           <form id="appointmentForm" onsubmit="handleAppointmentBooking(event)">
+            <div class="alert alert-warning" style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid #ffeeba;">
+              <strong>⚠️ Emergency Booking Only</strong><br>
+              By booking this appointment, you confirm this is an emergency. A doctor will be automatically assigned to you immediately.
+            </div>
+            
             <div class="form-group">
               <label class="form-label" for="appointmentDate">Select Date *</label>
               <input 

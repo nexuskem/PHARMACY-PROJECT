@@ -136,11 +136,19 @@ function searchProducts(query) {
  * @param {number} productId - Product ID
  */
 function addToCart(productId) {
+  if (!Auth.isLoggedIn()) {
+    showToast('Please login to add items to cart', 'info');
+    setTimeout(() => {
+      window.location.href = 'patient-login.html';
+    }, 1500);
+    return;
+  }
+
   const product = allProducts.find(p => p.id === productId);
   if (product) {
     if (window.Cart) {
       window.Cart.addItem(product);
-      showToast(`${product.name} added to cart`, 'success');
+      // Success message is handled in Cart.addItem
     } else {
       console.error('Cart module not loaded');
     }

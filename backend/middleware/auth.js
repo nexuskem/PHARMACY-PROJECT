@@ -24,8 +24,8 @@ const authenticateToken = async (req, res) => {
 };
 
 const requirePharmacist = (req, res) => {
-  if (!req.user || req.user.role !== 'pharmacist') {
-    sendJSON(res, 403, { success: false, message: 'Pharmacist access required' });
+  if (!req.user || (req.user.role !== 'pharmacist' && req.user.role !== 'doctor')) {
+    sendJSON(res, 403, { success: false, message: 'Pharmacist/Doctor access required' });
     return false;
   }
   return true;

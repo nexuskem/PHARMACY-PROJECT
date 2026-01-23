@@ -20,7 +20,7 @@ const Dashboard = {
 
     checkAuth() {
         const user = Auth.getCurrentUser();
-        if (!user || user.role !== 'pharmacist') {
+        if (!user || (user.role !== 'pharmacist' && user.role !== 'doctor')) {
             window.location.href = 'doctor-login.html';
             return;
         }
@@ -283,6 +283,13 @@ const Dashboard = {
 
     async handleBookAppointment(event) {
         event.preventDefault();
+
+        if (!Auth.isLoggedIn()) {
+            showToast('Session expired. Please login again.', 'error');
+            setTimeout(() => window.location.href = 'doctor-login.html', 1500);
+            return;
+        }
+
         const form = event.target;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());

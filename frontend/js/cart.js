@@ -38,6 +38,11 @@ const Cart = {
     const existingItem = cart.find(item => item.id === product.id);
 
     // Check if product requires approval
+    if (!Auth.isLoggedIn()) {
+      showToast('Please login to continue', 'error');
+      return;
+    }
+
     const currentUser = Auth.getCurrentUser();
     const isDoctor = currentUser && currentUser.role === 'pharmacist';
 

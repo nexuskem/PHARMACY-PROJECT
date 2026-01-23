@@ -275,6 +275,32 @@ const Auth = {
     window.location.href = 'index.html';
   },
 
+  // Theme Handling
+  toggleTheme() {
+    const currentTheme = localStorage.getItem('medicare_theme') || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('medicare_theme', newTheme);
+
+    this.updateThemeIcon();
+  },
+
+  applyTheme() {
+    const savedTheme = localStorage.getItem('medicare_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    this.updateThemeIcon();
+  },
+
+  updateThemeIcon() {
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    if (themeBtn) {
+      const currentTheme = localStorage.getItem('medicare_theme') || 'light';
+      themeBtn.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+      themeBtn.setAttribute('aria-label', `Switch to ${currentTheme === 'light' ? 'dark' : 'light'} mode`);
+    }
+  },
+
   /**
    * Update header based on auth state
    */
@@ -283,27 +309,33 @@ const Auth = {
     if (!authLinks) return;
 
     const user = this.getCurrentUser();
+    const themeButton = `<button id="theme-toggle-btn" class="theme-toggle" onclick="Auth.toggleTheme()" aria-label="Toggle theme">🌙</button>`;
 
     if (user) {
       const userName = user.name || `${user.firstName} ${user.lastName}`;
       authLinks.innerHTML = `
-        <a href="cart.html" class="cart-btn">
-          🛒 Cart
-          <span class="cart-count" style="display: none;">0</span>
-        </a>
-        <a href="${user.role === 'pharmacist' ? 'pharmacist.html' : 'dashboard.html'}" class="btn btn-outline">${userName}</a>
-        <button class="btn btn-primary" onclick="Auth.logout()">Logout</button>
-      `;
+                ${themeButton}
+                <a href="cart.html" class="cart-btn">
+                    🛒 Cart
+                    <span class="cart-count" style="display: none;">0</span>
+                </a>
+                <a href="${user.role === 'pharmacist' ? 'pharmacist.html' : 'dashboard.html'}" class="btn btn-outline">${userName}</a>
+                <button class="btn btn-primary" onclick="Auth.logout()">Logout</button>
+            `;
     } else {
       authLinks.innerHTML = `
-        <a href="cart.html" class="cart-btn">
-          🛒 Cart
-          <span class="cart-count" style="display: none;">0</span>
-        </a>
-        <a href="patient-login.html" class="btn btn-outline">Patient Login</a>
-        <a href="doctor-login.html" class="btn btn-outline">Doctor/Admin Login</a>
-      `;
+                ${themeButton}
+                <a href="cart.html" class="cart-btn">
+                    🛒 Cart
+                    <span class="cart-count" style="display: none;">0</span>
+                </a>
+                <a href="patient-login.html" class="btn btn-outline">Patient Login</a>
+                <a href="doctor-login.html" class="btn btn-outline">Doctor/Admin Login</a>
+            `;
     }
+
+    // Apply theme icon state
+    this.updateThemeIcon();
 
     // Update cart count
     if (typeof Cart !== 'undefined') {
@@ -440,12 +472,25 @@ async function handleAdminRegister(event) {
  * Handle appointment booking form
  * @param {Event} event - Form submit event
  */
-function handleAppointmentBooking(event) {
+/**
+ * Handle appointment booking form
+ * @param {Event} event - Form submit event
+ */
+async function handleAppointmentBooking(event) {
   event.preventDefault();
+
+  if (!Auth.isLoggedIn()) {
+    showToast('Please login to book an appointment', 'error');
+    setTimeout(() => {
+      window.location.href = 'patient-login.html';
+    }, 1500);
+    return;
+  }
 
   const date = document.getElementById('appointmentDate').value;
   const selectedTime = document.querySelector('.time-slot.selected');
   const reason = document.getElementById('reason').value;
+  const notes = document.getElementById('notes').value;
 
   if (!date) {
     showToast('Please select a date', 'error');
@@ -457,25 +502,39 @@ function handleAppointmentBooking(event) {
     return;
   }
 
-  // Mock save appointment
-  const appointment = {
-    id: 'APT-' + Date.now().toString().slice(-6),
-    date: date,
-    time: selectedTime.textContent,
-    reason: reason,
-    status: 'scheduled',
-    createdAt: new Date().toISOString()
-  };
+  const time = selectedTime.textContent;
+  const fullReason = `${reason}: ${notes}`;
 
-  let appointments = JSON.parse(localStorage.getItem('medicare_appointments') || '[]');
-  appointments.push(appointment);
-  localStorage.setItem('medicare_appointments', JSON.stringify(appointments));
+  try {
+    const response = await fetch(`${API_BASE_URL}/appointments/book`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Auth.getToken()}`
+      },
+      body: JSON.stringify({
+        date,
+        time,
+        reason: fullReason,
+        isEmergency: true // Enforced by system
+      })
+    });
 
-  showToast('Appointment booked successfully!', 'success');
+    const data = await response.json();
 
-  setTimeout(() => {
-    window.location.href = 'dashboard.html';
-  }, 1500);
+    if (data.success) {
+      showToast('Emergency appointment booked! Doctor assigned.', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 2000);
+    } else {
+      showToast(data.message || 'Booking failed', 'error');
+    }
+
+  } catch (error) {
+    console.error('Booking error:', error);
+    showToast('Network error processing booking', 'error');
+  }
 }
 
 /**
@@ -514,8 +573,8 @@ function toggleMobileMenu() {
   }
 }
 
-// Initialize auth state on page load
 document.addEventListener('DOMContentLoaded', () => {
+  Auth.applyTheme();
   Auth.updateHeader();
 
   // Initialize time slots if on appointment page

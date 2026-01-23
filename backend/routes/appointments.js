@@ -9,12 +9,22 @@ async function book(req, res) {
 
   try {
     const userId = req.user.id;
-    const { date, time, reason } = req.body;
+    // We strictly enforce emergency booking for now
+    // In a real app we might allow non-emergency if the user is a doctor/admin booking for someone else
+    // But per requirements: "patient can only book an appointment if it is emergency"
+    const { date, time, reason, isEmergency } = req.body;
 
     if (!date || !time) {
       return sendJSON(res, 400, {
         success: false,
         message: 'Date and time are required'
+      });
+    }
+
+    if (!isEmergency) {
+      return sendJSON(res, 400, {
+        success: false,
+        message: 'Only emergency appointments can be booked at this time.'
       });
     }
 
@@ -29,21 +39,67 @@ async function book(req, res) {
 
     const pool = db.getDb();
 
-    // Check if time slot is available (optional: implement slot checking)
+    // Auto-assign any free doctor
+    // Strategy: Find a doctor who does NOT have an appointment at this date/time
+    // Prioritize doctors with fewer patients or just pick random/first available
+
+    // First, get all doctors (pharmacists)
+    const [doctors] = await pool.query('SELECT id FROM users WHERE role = ? OR role = ?', ['pharmacist', 'doctor']);
+
+    if (doctors.length === 0) {
+      return sendJSON(res, 503, {
+        success: false,
+        message: 'No doctors available in the system.'
+      });
+    }
+
+    // Check availability for each doctor at the requested time
+    // This could be optimized with a complex JOIN, but a simple filter is fine for reduced complexity
+    let assignedDoctorId = null;
+
+    for (const doc of doctors) {
+      const [busy] = await pool.query(
+        'SELECT id FROM appointments WHERE doctor_id = ? AND date = ? AND time = ? AND status != ?',
+        [doc.id, date, time, 'cancelled']
+      );
+
+      if (busy.length === 0) {
+        assignedDoctorId = doc.id;
+        break;
+      }
+    }
+
+    if (!assignedDoctorId) {
+      return sendJSON(res, 409, {
+        success: false,
+        message: 'No doctors available at this specific time. Please choose another slot.'
+      });
+    }
+
+    // Create the appointment
     const [result] = await pool.query(
-      'INSERT INTO appointments (patient_id, date, time, reason, status) VALUES (?, ?, ?, ?, ?)',
-      [userId, date, time, reason || null, 'pending']
+      'INSERT INTO appointments (user_id, doctor_id, date, time, reason, status, is_emergency) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [userId, assignedDoctorId, date, time, reason || 'Emergency Consultation', 'scheduled', 1]
+    );
+
+    const appointmentId = result.insertId;
+
+    // Create notification for the assigned doctor
+    await pool.query(
+      'INSERT INTO notifications (user_id, message, appointment_id) VALUES (?, ?, ?)',
+      [assignedDoctorId, `New EMERGENCY appointment booked for ${date} at ${time}`, appointmentId]
     );
 
     sendJSON(res, 201, {
       success: true,
-      message: 'Appointment booked successfully',
+      message: 'Emergency appointment booked successfully. A doctor has been assigned.',
       appointment: {
-        id: result.insertId,
+        id: appointmentId,
         date,
         time,
         reason,
-        status: 'scheduled'
+        status: 'scheduled',
+        doctor_id: assignedDoctorId
       }
     });
   } catch (error) {
@@ -65,7 +121,7 @@ async function getAll(req, res) {
     const pool = db.getDb();
 
     const [appointments] = await pool.query(
-      'SELECT * FROM appointments WHERE patient_id = ? ORDER BY date DESC, time DESC',
+      'SELECT * FROM appointments WHERE user_id = ? ORDER BY date DESC, time DESC',
       [userId]
     );
 
@@ -90,7 +146,7 @@ async function getOne(req, res) {
     const pool = db.getDb();
 
     const [appointments] = await pool.query(
-      'SELECT * FROM appointments WHERE id = ? AND patient_id = ?',
+      'SELECT * FROM appointments WHERE id = ? AND user_id = ?',
       [id, userId]
     );
 
@@ -122,7 +178,7 @@ async function cancel(req, res) {
     const pool = db.getDb();
 
     const [result] = await pool.query(
-      'UPDATE appointments SET status = ? WHERE id = ? AND patient_id = ?',
+      'UPDATE appointments SET status = ? WHERE id = ? AND user_id = ?',
       ['cancelled', id, userId]
     );
 

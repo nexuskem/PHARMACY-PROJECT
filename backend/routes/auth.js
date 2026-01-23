@@ -241,12 +241,121 @@ async function getMe(req, res) {
   }
 }
 
-// Forgot Password (Stub to keep file valid, implementation omitted for brevity as it was mostly mock)
+const crypto = require('crypto');
+// Forgot Password
 async function forgotPassword(req, res) {
-  sendJSON(res, 200, { success: true, message: 'Feature temporarily unavailable during update' });
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return sendJSON(res, 400, { success: false, message: 'User ID is required' });
+    }
+
+    const pool = db.getDb();
+    let user;
+    let table;
+    let idColumn;
+
+    // Check patients first
+    const [patients] = await pool.query('SELECT * FROM patients WHERE patient_id = ?', [userId]);
+    if (patients.length > 0) {
+      user = patients[0];
+      table = 'patients';
+      idColumn = 'patient_id';
+    } else {
+      // Check doctors/pharmacists
+      const [doctors] = await pool.query('SELECT * FROM doctors WHERE pharmacist_id = ?', [userId]);
+      if (doctors.length > 0) {
+        user = doctors[0];
+        table = 'doctors';
+        idColumn = 'pharmacist_id';
+      }
+    }
+
+    if (!user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found' });
+    }
+
+    // Generate token
+    const token = crypto.randomBytes(20).toString('hex');
+    const expires = new Date(Date.now() + 3600000); // 1 hour
+
+    // Save token to DB
+    await pool.query(
+      `UPDATE ${table} SET reset_token = ?, reset_token_expires = ? WHERE id = ?`,
+      [token, expires, user.id]
+    );
+
+    // In a real app, send email here. For now, return link.
+    const resetLink = `http://${req.headers.host}/reset-password.html?token=${token}`;
+    console.log(`[SIMULATED EMAIL] Reset Link for ${userId}: ${resetLink}`);
+
+    sendJSON(res, 200, {
+      success: true,
+      message: 'Password reset link generated',
+      resetLink // Returning for testing purposes
+    });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    sendJSON(res, 500, { success: false, message: 'Error generating reset link' });
+  }
 }
+
+// Reset Password
 async function resetPassword(req, res) {
-  sendJSON(res, 200, { success: true, message: 'Feature temporarily unavailable during update' });
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return sendJSON(res, 400, { success: false, message: 'Token and new password required' });
+    }
+
+    const pool = db.getDb();
+
+    // Find user with valid token
+    let user;
+    let table;
+
+    // effective way to check both tables
+    const [patients] = await pool.query(
+      'SELECT * FROM patients WHERE reset_token = ? AND reset_token_expires > NOW()',
+      [token]
+    );
+
+    if (patients.length > 0) {
+      user = patients[0];
+      table = 'patients';
+    } else {
+      const [doctors] = await pool.query(
+        'SELECT * FROM doctors WHERE reset_token = ? AND reset_token_expires > NOW()',
+        [token]
+      );
+      if (doctors.length > 0) {
+        user = doctors[0];
+        table = 'doctors';
+      }
+    }
+
+    if (!user) {
+      return sendJSON(res, 400, { success: false, message: 'Password reset token is invalid or has expired' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear token
+    await pool.query(
+      `UPDATE ${table} SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?`,
+      [hashedPassword, user.id]
+    );
+
+    sendJSON(res, 200, { success: true, message: 'Password has been updated' });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    sendJSON(res, 500, { success: false, message: 'Error updating password' });
+  }
 }
 
 module.exports = {
